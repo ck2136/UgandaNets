@@ -380,14 +380,16 @@ f.ref <- function(x) {
   stringr::str_extract(table_nums(x), "[^:]*")
 }
 ggmap(map) +
-  geom_polygon(aes(fill = rates, x = long, y = lat, group = group),
-               data = f1df[f1df$stime %in% c(1,2,3,4),],
-               alpha = 0.8,
-               color = "black",
-               size = 0.2) +
-  facet_grid(vars ~ stime) +
-  scale_fill_gradient2(low = "yellow", mid = "orange", high = "red", # colors
-                       midpoint = 0.5, name = paste0("rate"))
+    geom_polygon(aes(fill = rates, x = long, y = lat, group = group),
+                 data = f1df[f1df$stime %in% c(1,2,3,4),] %>%
+                     mutate(stime = ifelse(stime == 1, "Survey 1", ifelse(stime == 2, "Survey 2", ifelse(stime == 3, "Survey 3", "Survey 4")))),
+                 alpha = 0.8,
+                 color = "black",
+                 size = 0.2) +
+theme(axis.text.x = element_text(size=7, angle=45, hjust = 1)) +
+facet_grid(vars ~ stime) +
+scale_fill_gradient2(low = "yellow", mid = "orange", high = "red", # colors
+                     midpoint = 0.5, name = paste0("rate"))
 ```
 
 
