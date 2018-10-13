@@ -1,0 +1,236 @@
+% !TeX program = pdfLaTeX
+\documentclass[smallextended]{svjour3}       % onecolumn (second format)
+%\documentclass[twocolumn]{svjour3}          % twocolumn
+%
+\smartqed  % flush right qed marks, e.g. at end of proof
+%
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+
+\usepackage[hyphens]{url} % not crucial - just used below for the URL
+\usepackage{hyperref}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+%
+% \usepackage{mathptmx}      % use Times fonts if available on your TeX system
+%
+% insert here the call for the packages your document requires
+%\usepackage{latexsym}
+% etc.
+%
+% please place your own definitions here and don't use \def but
+% \newcommand{}{}
+%
+% Insert the name of "your journal" with
+% \journalname{myjournal}
+%
+
+%% load any required packages here
+
+
+
+\usepackage[margin=1in]{geometry}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{xcolor}
+\usepackage{textcomp}
+\usepackage{colortbl}
+\usepackage{longtable}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{booktabs,tabularx,ragged2e,dcolumn,caption}
+\usepackage{graphicx}
+\usepackage{float}
+
+\begin{document}
+
+\title{Spatial analysis of the association between LLIN use and malaria
+prevalence in a longitudinal cohort in northeast Uganda \thanks{Grants or other notes about the article that should go on the front page
+should be placed here. General acknowledgments should be placed at the
+end of the article.} }
+
+
+    \titlerunning{LLIN use and malaria prevalence in Uganda}
+
+\author{  Chong Kim \and  Dorothy Echodu \and  Humphrey Wanzira \and  Yeka Adoke \and  Kathryn L. Colborn \and  }
+
+
+\institute{
+        Chong Kim \at
+     Department of Biostatistics and Informatics, University of Colorado
+ Denver, Aurora, CO, USA \\
+     \email{\href{mailto:chong.kim@ucdenver.edu}{\nolinkurl{chong.kim@ucdenver.edu}}}  %  \\
+%             \emph{Present address:} of F. Author  %  if needed
+    \and
+        Dorothy Echodu \at
+     Pilgrim Africa \\
+     \email{\href{mailto:djf@wef}{\nolinkurl{djf@wef}}}  %  \\
+%             \emph{Present address:} of F. Author  %  if needed
+    \and
+        Humphrey Wanzira \at
+     Pilgrim Africa \\
+     \email{\href{mailto:djf@wef}{\nolinkurl{djf@wef}}}  %  \\
+%             \emph{Present address:} of F. Author  %  if needed
+    \and
+        Yeka Adoke \at
+     Pilgrim Africa \\
+     \email{\href{mailto:djf@wef}{\nolinkurl{djf@wef}}}  %  \\
+%             \emph{Present address:} of F. Author  %  if needed
+    \and
+        Kathryn L. Colborn \at
+     Department of Biostatistics and Informatics, University of Colorado
+ Denver, Aurora, CO, USA \\
+     \email{\href{mailto:Kathryn.colborn@ucdenver.edu}{\nolinkurl{Kathryn.colborn@ucdenver.edu}}}  %  \\
+%             \emph{Present address:} of F. Author  %  if needed
+    \and
+    }
+
+\date{Received: date / Accepted: date}
+% The correct dates will be entered by the editor
+
+
+\maketitle
+
+\begin{abstract}
+The text of your abstract. 150 -- 250 words.
+\\
+\keywords{
+        LLIN \and
+        Spatial analysis \and
+        Malaria \and
+        RDT \and
+        Microscopy \and
+    }
+
+
+\end{abstract}
+
+
+\def\spacingset#1{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize} \spacingset{1}
+
+
+\section{Introduction}\label{intro}
+
+Your text comes here. Separate text sections with
+
+\section{Methods}\label{sec:methods}
+
+Text with citations by Galyardt (2014), (Mislevy 2006).
+
+\subsection{Subsection title}\label{sec:methodssub1}
+
+as required. Don't forget to give each section and subsection a unique
+label (see Sect. \ref{sec:methods}).
+
+\paragraph{Paragraph headings}\label{paragraph-headings}
+
+Use paragraph headings as needed.
+
+\begin{align}
+a^2+b^2=c^2
+\end{align}
+
+\section{Results}\label{sec:results}
+
+Table 1: Demographic characteristics, net usage, and malaria status of
+study population.
+
+\definecolor{yellow}{rgb}{1.0, 1.0, 0.0}
+\definecolor{black}{rgb}{0.0, 0.0, 0.0}
+\definecolor{red}{rgb}{1.0, 0.0, 0.0}
+\definecolor{black}{rgb}{0.0, 0.0, 0.0}
+
+\begin{table}[!hbtp]
+\begin{center}
+\begin{small}
+\color{black}
+\begin{tabular}{llcccrr}
+\hline
+&Time 1&Time 2&Time 3&Time 4&\\ 
+&(N=194)&(N=198)&(N=200)&(N=200)&\multirow{-2}{*}{p}\\ 
+\hline
+\textbf{Demographic}&&&&&\\ 
+Age mean (sd)            &23.1 ± 15.8&22.4 ± 15.1&25.4 ± 17.5&25.4 ± 19.1&0.165\\ 
+People per HH mean(sd)   &5.6 ± 3.0&5.8 ± 3.3&5.1 ± 2.9&5.4 ± 2.9&0.129\\ 
+\textbf{Net usage}&&&&&\\ 
+\cellcolor{yellow}\color{red}Nets per HH mean(sd)     &\cellcolor{yellow}\color{red}1.9 ± 1.7&\cellcolor{yellow}\color{red}2.9 ± 1.6&\cellcolor{yellow}\color{red}2.4 ± 1.3&\cellcolor{yellow}\color{red}2.0 ± 1.5&\cellcolor{yellow}\color{red}< 0.001\\ 
+\cellcolor{yellow}\color{red}Nets per person mean(sd) &\cellcolor{yellow}\color{red}0.4 ± 0.3&\cellcolor{yellow}\color{red}0.6 ± 0.3&\cellcolor{yellow}\color{red}0.6 ± 0.3&\cellcolor{yellow}\color{red}0.5 ± 0.3&\cellcolor{yellow}\color{red}< 0.001\\ 
+\cellcolor{yellow}\color{red}Nets per two mean (sd)   &\cellcolor{yellow}\color{red}&\cellcolor{yellow}\color{red}&\cellcolor{yellow}\color{red}&\cellcolor{yellow}\color{red}&\cellcolor{yellow}\color{red}< 0.001\\ 
+ \hspace{0.5cm} 0                    &120 (61.9\%)&66 (33.3\%)&70 (35\%)&105 (52.5\%)&\\ 
+ \hspace{0.5cm} 1                    &74 (38.1\%)&132 (66.7\%)&130 (65\%)&95 (47.5\%)&\\ 
+\textbf{Malaria}&&&&&\\ 
+\cellcolor{yellow}\color{red}Total sampled mean (sd)  &\cellcolor{yellow}\color{red}4.7 ± 2.6&\cellcolor{yellow}\color{red}4.3 ± 2.4&\cellcolor{yellow}\color{red}4.0 ± 2.1&\cellcolor{yellow}\color{red}4.0 ± 2.2&\cellcolor{yellow}\color{red}0.005\\ 
+\cellcolor{yellow}\color{red}Prop + by RDT            &\cellcolor{yellow}\color{red}0.4 ± 0.3&\cellcolor{yellow}\color{red}0.5 ± 0.3&\cellcolor{yellow}\color{red}0.3 ± 0.3&\cellcolor{yellow}\color{red}0.2 ± 0.2&\cellcolor{yellow}\color{red}< 0.001\\ 
+\cellcolor{yellow}\color{red}Prop + by microscopy     &\cellcolor{yellow}\color{red}0.2 ± 0.2&\cellcolor{yellow}\color{red}0.2 ± 0.3&\cellcolor{yellow}\color{red}0.1 ± 0.2&\cellcolor{yellow}\color{red}0.1 ± 0.2&\cellcolor{yellow}\color{red}< 0.001\\ 
+\hline
+\end{tabular}
+\end{small}
+\end{center}
+\end{table}
+
+\color{black}
+
+Table 2: Coefficients from spatial model
+
+\begin{table}[H]
+\centering\begingroup\fontsize{7}{9}\selectfont
+
+\begin{tabular}{lcccc}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{4}{c}{Dependent Variable} \\
+\cmidrule(l{2pt}r{2pt}){2-5}
+\multicolumn{1}{c}{ } & \multicolumn{2}{c}{RDT+} & \multicolumn{2}{c}{MIC+} \\
+\cmidrule(l{2pt}r{2pt}){2-3} \cmidrule(l{2pt}r{2pt}){4-5}
+  & Net Cov & >= 1 net per 2 & Net Cov & >= 1 net per 2\\
+\midrule
+netCov & 0.681 (0.525, 0.873) & 0.813 (0.73, 0.94) & 0.702 (0.513, 0.982) & 0.859 (0.709, 1.01)\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Time}}\\
+\hspace{1em}stime2 & 1.08 (0.936, 1.26) & 1.08 (0.913, 1.22) & 1.48 (1.16, 1.81) & 1.44 (1.18, 1.76)\\
+\hspace{1em}stime3 & 0.670 (0.552, 0.796) & 0.681 (0.55, 0.791) & 0.815 (0.598,  1.1) & 0.781 (0.591, 0.994)\\
+\hspace{1em}stime4 & 0.612 (0.515, 0.717) & 0.614 (0.51, 0.734) & 0.791 (0.58, 1.03) & 0.784 (0.575, 0.989)\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Spatial}}\\
+\hspace{1em}longitude & 0.00286 (0.000212, 0.108) & 0.00253 (0.000115, 0.0263) & 0.014 (0.000124, 1.08) & 0.0104 (0.0000946, 0.61)\\
+\hspace{1em}latitude & 0.852 (0.178, 5.21) & 0.751 (0.169, 5.04) & 0.203 (0.0116, 2.61) & 0.211 (0.0186, 3.39)\\
+\hspace{1em}sig\textasciicircum{}2 & 1.01 (1.00, 1.02) & 1.01 (   1, 1.02) & 1.03 (1.01, 1.08) & 1.03 (1.01, 1.08)\\
+\hspace{1em}phi & 1.52 (1.52, 7.39) & 1.04 (1.04, 6.69) & 1.04 (1.04, 6.82) & 1.04 (1.04, 6.96)\\
+\bottomrule
+\end{tabular}\endgroup{}
+\end{table}
+
+\subsection{Subsection title}\label{sec:2}
+
+Referencing Table 1 is cool. as required. Don't forget to give each
+section and subsection a unique label (see Sect. \ref{sec:results}).
+
+\paragraph{Paragraph headings}\label{paragraph-headings-1}
+
+Use paragraph headings as needed.
+
+\begin{align}
+a^2+b^2=c^2
+\end{align}
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\hypertarget{ref-Galyardt14mmm}{}
+Galyardt, April. 2014. ``Interpreting Mixed Membership Models:
+Implications of Erosheva's Representation Theorem.'' In \emph{Handbook
+of Mixed Membership Models}, edited by Edoardo M. Airoldi, David Blei,
+Elena Erosheva, and Stephen E. Fienberg. Chapman; Hall.
+
+\hypertarget{ref-Mislevy06Cog}{}
+Mislevy, Robert. 2006. ``Cognitive Psychology and Educational
+Assessment.'' In \emph{Educational Assessment}, edited by Robert L.
+Brennan. American Council on Education; Praeger Publishers.
+
+\bibliographystyle{spbasic}
+\bibliography{bibliography.bib}
+
+\end{document}
