@@ -65,6 +65,7 @@ header-includes:
 
 ```{r knitr_init, echo=FALSE, cache=FALSE}
 library(knitr)
+library(captioner)
 
 ## Global options
 #options(max.print="75")
@@ -74,23 +75,13 @@ opts_chunk$set(echo=FALSE,
                tidy=TRUE,
                comment=NA,
                message=FALSE,
-               warning=FALSE)
+               warning=FALSE,
+               #eval.after = 'fig.cap',
+               fig.pos = "H"
+               )
 #opts_knit$set(width=75)
 opts_knit$set(root.dir = normalizePath("~/Documents/Projects/DrColborn/UgandaNets"))
 
-# captioning
-table_nums <- captioner::captioner(prefix = "Table ")
-tab.1_cap <- table_nums(name = "tab_1",
-                        caption = "Demographic characteristics, net usage, and malaria status of study population.")
-
-tab.2_cap <- table_nums(name = "tab_2",
-                        caption = "Coefficients from spatial model")
-# referecing function
-f.ref <- function(x) {
-  stringr::str_extract(table_nums(x), "[^:]*")
-}
-
-# from https://datascienceplus.com/r-markdown-how-to-number-and-reference-tables/
 ```
 
 # Introduction {#intro}
@@ -116,6 +107,23 @@ a^2+b^2=c^2
 
 
 # Results {#sec:results}
+
+```{r tablenumbering}
+# captioning
+table_nums <- captioner::captioner(prefix = "Table ")
+tab.1_cap <- table_nums(name = "tab_1",
+                        caption = "Demographic characteristics, net usage, and malaria status of study population.")
+
+tab.2_cap <- table_nums(name = "tab_2",
+                        caption = "Coefficients from spatial model")
+# referecing function
+f.ref <- function(x) {
+  stringr::str_extract(table_nums(x), "[^:]*")
+}
+
+# from https://datascienceplus.com/r-markdown-how-to-number-and-reference-tables/
+```
+
 
 `r table_nums('tab_1')`
 
@@ -299,6 +307,151 @@ kable(tab2, align = c("c"),
     add_header_above(c(" ", "Dependent Variable" = 4)) %>%
     group_rows("Time", 2, 4) %>%
     group_rows("Spatial", 5, 8) 
+```
+
+
+
+
+```{r agg_rdt+, include=FALSE}
+library(sp)
+library(rgdal)
+library(dplyr)
+
+rm(list=ls())
+### df <- readRDS("ug_ct2_final.RDS") # This is the original data with the CleanS1S2....csv file
+df <- readRDS("./data/process/final_hh_df.RDS")
+
+### A. Convert data into SpatialPointsDataFrame
+spdf <- SpatialPointsDataFrame(coords = df[,c("longitude","latitude")], data = subset(df, select = 1:ncol(df)), proj4string = CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+### B. Import the SpatialPolygonDataFrame based on the downloaded SHP file
+# First subset the two districts that hae received the intervention
+
+uganda_shp <- readOGR(dsn = "/home/ck1/Documents/Projects/DrColborn/UgandaNets/data/UGA_adm_shp", layer = "UGA_adm4")
+
+### Here is another shp file from the people at IDS 
+
+uganda_shpa <- readOGR(dsn = "/home/ck1/Documents/Projects/DrColborn/UgandaNets/data/PIL_shp", layer = "pilgrim_villages")
+
+subset <- uganda_shpa[uganda_shpa$subcounty == 2,] # we want subcounty 2
+
+
+temp <- over(spdf, subset) # here we're getting those observations from the spdf points dataframe that intersects with the subset polygon dataframe
+temp <- cbind(as.data.frame(df), temp[3]) # merge in the village column
+poly1 <- subset # create new subset so that we can join 
+poly1@data <- left_join(poly1@data, aggregate(rdtRate ~ village, FUN = mean, data = temp)) # here we are aggregating across all survey time points
+poly1@data <- left_join(poly1@data, aggregate(netCov ~ village, FUN = mean, data = temp)) # same thing for the net coverage
+
+#### Plot RDT+, MIC+, by survey times...
+md_time <- temp %>%
+  mutate(mi = ifelse(is.na(num_hh) == TRUE, 1, 0)) %>%
+  select(village, stime, mi,micRate, rdtRate, netCov, Netptwo, oneNet, slept_net_p) %>%
+  group_by(village, stime) %>%
+  summarize_all(funs(mean)) %>%
+  filter(is.na(village) == FALSE)
+
+poly2 <- poly1
+poly2 <- broom::tidy(poly2)
+poly2$village <- as.numeric(poly2$id) - 54
+poly2 <- left_join(poly2, md_time)
+
+library(ggmap)
+library(gridExtra)
+library(lattice)
+#map <- get_map(location = c(lon = 34.1, lat = 1.75), zoom = 12, maptype = "hybrid")
+map <- readRDS("/home/ck1/Documents/Projects/DrColborn/UgandaNets/data/process/map.RDS") # in the process folder
+# function to extract legend only
+g_legend <- function(a.gplot){ 
+    tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
+    leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
+    legend <- tmp$grobs[[leg]] 
+    return(legend)} 
+
+library(tidyr)
+f1df <- gather(poly2, vars, rates, micRate, rdtRate)
+f1df <- data.frame(f1df) %>%
+    mutate(vars = ifelse(vars == 'rdtRate', 'RDT', 'Microscopy')) 
+f1df$vars <- factor(f1df$vars, levels = c('RDT','Microscopy'))
+
+```
+
+```{r googmap_overlay, fig.align='center', fig.width=6.5, fig.height=6.5, fig.cap="Maps of microscopy and rapid diagnostic test positivity using village shapes by survey time."}
+f.ref <- function(x) {
+  stringr::str_extract(table_nums(x), "[^:]*")
+}
+ggmap(map) +
+  geom_polygon(aes(fill = rates, x = long, y = lat, group = group),
+               data = f1df[f1df$stime %in% c(1,2,3,4),],
+               alpha = 0.8,
+               color = "black",
+               size = 0.2) +
+  facet_grid(vars ~ stime) +
+  scale_fill_gradient2(low = "yellow", mid = "orange", high = "red", # colors
+                       midpoint = 0.5, name = paste0("rate"))
+```
+
+
+
+
+```{r fig2, fig.align='center', fig.width=6.1, fig.height=9.5, fig.cap=paste0("Relationship between LLIN use and Positivity.", "\\textbf{A}" ,": Net coverage (i.e. proportion of net/tested in HH) vs. positivity. ", " \\textbf{B} " ," : Sleeping under the net (i.e. Proportion of people sleeping under/per net in HH) and positivity. ", " \\textbf{C} ", " : Net per two (i.e.", ">","50","\\%"," people in HH) and positivity")}
+library(ggplot2)
+library(gridExtra)
+library(gtable)
+library(grid)
+#-- make df that will allow facet_* by 
+spline_k <- 4
+f2df <- df %>%
+    filter(county == 2) %>%
+    gather(., vars, rates, micRate, rdtRate) %>%
+    mutate(vars = ifelse(vars == "rdtRate", "RDT", "Microscopy"),
+           Netptwo = ifelse(Netptwo == 1, ">50%", "<50%"))
+f2a <- ggplot(f2df, aes(x = netCov, y = rates, color = as.factor(stime))) + 
+  geom_smooth(method = 'gam', formula = y ~ s(x, bs="cs", k=spline_k)) + 
+  facet_grid(. ~ vars)+
+  theme_light() + 
+  ggtitle("A") +
+  labs(color = "Survey Time") + 
+  scale_color_manual(values=c("#000000", "#f20505","#f9d70b", '#f4a460')) + 
+  theme(legend.position="bottom", axis.title.y = element_blank(), axis.title.x = element_blank()) +
+  coord_cartesian(ylim = c(0, 0.6), xlim=c(0,1))
+
+f2c <- ggplot(f2df, aes(x = as.factor(Netptwo), y = rates, fill = as.factor(stime))) + 
+  geom_boxplot() +
+  facet_grid(. ~ vars)+
+  labs(fill = "Survey Time") +
+  scale_fill_manual(values=c("#000000", "#f20505","#f9d70b", '#f4a460')) + 
+  ggtitle("C") +
+  theme_light() + 
+  theme(legend.position="bottom", axis.title.y = element_blank(), axis.title.x = element_blank()) 
+
+f2b <- ggplot(f2df, aes(x = slept_net_p, y = rates, color = as.factor(stime))) + 
+  geom_smooth(method = 'gam', formula = y ~ s(x, bs="cs", k=spline_k)) + 
+  facet_grid(. ~ vars)+
+  theme_light() + 
+  labs(color = "Survey Time") + 
+  ggtitle("B") +
+  scale_color_manual(values=c("#000000", "#f20505","#f9d70b", '#f4a460')) + 
+  theme(legend.position="bottom", axis.title.y = element_blank(), axis.title.x = element_blank()) +
+  coord_cartesian(ylim = c(0, 0.6), xlim=c(0,1))
+
+mylegend<-g_legend(f2a)
+f2 <- grid.arrange(
+  arrangeGrob(f2a + theme(legend.position="none"),
+              f2b + theme(legend.position="none"),
+              f2c + theme(legend.position="none")
+              ,nrow=3,
+              left = textGrob("Rate", rot = 90, vjust = 1),
+              bottom = textGrob("Coverate Rate")
+              ),
+  mylegend, nrow=2,heights=c(12, 1) 
+  )
+#library(cowplot)
+#plot_grid(f2a, f2b, f2c, 
+          #ncol=1,
+          #axis='1',
+          #labels = "AUTO",
+          #align = 'v'
+          #)
 ```
 
 
