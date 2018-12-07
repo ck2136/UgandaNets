@@ -42,14 +42,15 @@ MSC:
 #- MSC code 2    
 
 abstract: |
-  The text of your abstract.  150 -- 250 words.
+  **Background**: **Methods**:**Results**:**Conclusions**:150 -- 250 words.
 
 bibliography: bibliography.bib
 output: 
+    #bookdown::pdf_book:
     pdf_document:
+        template: template.tex
     #rticles::springer_article
         #latex_engine: xelatex
-        template: template.tex
 header-includes:
    - \usepackage[margin=1in]{geometry}
    - \usepackage{multirow}
@@ -92,21 +93,24 @@ Your text comes here. Separate text sections with
 
 # Methods {#sec:methods}
 
-Text with citations by @Galyardt14mmm, [@Mislevy06Cog].
+## Study design {#sec:methodssd}
+This study employed a prospective observational design with cross-sectional surveys conducted during 4 time periods. The first in November to December 2016; second collection in June to July 2017; third collection in X to Y 2017; and fourth collection in X to Y 2018. In March 2017, in-between the first and second survey, Magoro received free LLIN under the second national mass distribution campaign, and the details of the distribution are contained in the 2016 National LLIN implementation guidelines[@nationalllin].
 
-## Subsection title {#sec:methodssub1}
+## Study setting {#sec:methodsss}
+This study was conducted in the northeast region of Uganda, specifically in the sub-county Magoro (Fig \@ref{fig:googmap_overlay}). The field data were collected between [Start Date] and [End Date]. Details of the sample size and sampling of households are detailed in previous study[@wanzira2016use].
 
-as required. Don't forget to give each section
-and subsection a unique label (see Sect. \ref{sec:methods}).
+## Data collection tools and techniques {#sec:methodsdcol}
+Questionnaire data regarding [x, y, and z] were collected by [person]  using pre-tested, structured questionnaire during face-to-face interviews with respondents. [peeople] were trained prior to data collection, through [lecture, video and etc] on completing the questionnaires, mock interviews, and field practice. [A monitoring system was in place to validate, standardize, and maintain quality of data and tasks such as spot checking, back checking, and provided necessary feedback to the teams working in the field]. Different types of checklists were used in different data collection tools for qualitative segment. A team of [x] research assistants with [y] background, along with the lead [doctor/nurs] to collect field data.
 
-#### Paragraph headings 
+Malaria data were collected by [person] using rapid diagnostic tests (RDT) and smear microscopy[@makler1998review].
 
-Use paragraph headings as needed.
+## Variables assessed {#sec:methodsva}
+The demographic variables for respondents were age (years) and gender. The household level variables assessed were number of people per household, net use per household, and RDT and microscopy tested per household.
 
-\begin{align}
-a^2+b^2=c^2
-\end{align}
+## Data analysis {#sec:methodsda}
 
+## Ethical considerations {#sec:methodsethics}
+The [year] MIS was approved by two ethical review bodies that included the Makerere University School of Biomedical Sciences Higher Degrees Research and Ethics Committee (SBS-HDREC) and the Uganda National Council for Science and Technology (UNCST). All participants interviewed gave their informed consent to participate in the 2014 MIS in addition to granting permission that information from survey could be published. The data used in this analysis was anonymous with no individual names of participations were captured.
 
 # Results {#sec:results}
 
@@ -512,9 +516,3 @@ Use paragraph headings as needed.
 a^2+b^2=c^2
 \end{align}
 
-
-
-
-
-
-# References
