@@ -46,8 +46,10 @@ abstract: |
 
 bibliography: bibliography.bib
 output: 
-    rticles::springer_article
-        #latex_engine: xelatex
+    pdf_document:
+    #rticles::springer_article
+        latex_engine: xelatex
+        template: template.tex
 header-includes:
    - \usepackage[margin=1in]{geometry}
    - \usepackage{multirow}
@@ -70,7 +72,7 @@ library(captioner)
 ## Global options
 #options(max.print="75")
 opts_chunk$set(echo=FALSE,
-	             cache=TRUE,
+				 #cache=TRUE,
                prompt=FALSE,
                tidy=TRUE,
                comment=NA,
@@ -124,12 +126,14 @@ f.ref <- function(x) {
 # from https://datascienceplus.com/r-markdown-how-to-number-and-reference-tables/
 ```
 
+Something something about table 1.
 
 `r table_nums('tab_1')`
 
 ```{r tab1, results='asis', fig.cap = tab.1_cap}
 options(ztable.type="latex")
 options(ztable.zebra=NULL)
+#options(ztable.colnames.bold=TRUE)
 library(dplyr)
 library(knitr)
 library(moonBook)
@@ -138,33 +142,36 @@ library(ztable)
 library(xtable)
 library(tables)
 tab1 <- readRDS("./data/process/table1.RDS")
-mytable(stime ~ age +
-        #gender +
+mytable(stime ~ 
+        age +
         num_hh +
         num_net +
         netCov +
         Netptwo +
-        hh_tested +
+        rdtPos_tested +
         rdtRate +
+        micPos_tested +
         micRate
     , data=tab1) %>%
 addComma %>%
 ztable %>%
 addrgroup(rgroup=c("Demographic","Net usage","Malaria"),
-          n.rgroup=c(2, 5, 3), cspan.rgroup=1) %>%
-addSigColor(level=0.1,bg="yellow",color="red") %>%
+          n.rgroup=c(2, 5, 4), cspan.rgroup=1) %>%
+#addSigColor(level=0.1,bg="yellow",color="red") %>%
 update_ztable(., size=4 
               #,align=c("l","c","c","c","c","r")
               ) %>%
-print(type='latex')
+print(type='latex', caption.placement = "top")
 ```
+
+
 
 `r table_nums('tab_2')`
 
 ```{r tab2, results='asis', fig.cap = tab.2_cap}
 #options(ztable.type="latex")
-#options(ztable.zebra=NULL)
-options("scipen"=999, digits=3)
+options(ztable.zebra=NULL)
+#options("scipen"=999, digits=3)
 library(Hmisc)
 library(geoR)
 library(geoRglm)
@@ -173,7 +180,6 @@ library(knitr)
 pkb <- readRDS("./data/results/pkb.RDS")
 pkb.mcmc.tune <- mcmc.control(S.scale = 0.005, thin = 1)
 pkb_all <- readRDS("./data/results/pkb_allvars.RDS")
-
 # - - - - - - - - - - - - - - - #
 # NetCov w/ Surface Trend
 # - - - - - - - - - - - - - - - #
@@ -209,21 +215,25 @@ rownames(rt4) <- c("95% LCI","95% UCI","Median","Mean")
 colnames(rt4) <- c("intercep","netCov","stime2","stime3",'stime4',"longitude","latitude", "sig^2","phi")
 
 
-rt6 <- sapply(1:nrow(pkb_all[[1]][[4]]$posterior$beta$sample), function(x) {
-  c(HPDinterval(create.mcmc.coda(pkb_all[[1]][[4]]$posterior$beta$sample[x,],mcmc.input = pkb.mcmc.tune), prob = 0.95), median(create.mcmc.coda(pkb_all[[1]][[4]]$posterior$beta$sample[x,],mcmc.input = pkb.mcmc.tune)))
-})
 
 # - - - - - - - - - - - - - - - #
 # MIC: netcov w/ Surface Trend
 # - - - - - - - - - - - - - - - #
 
+pkb<- readRDS("~/Documents/Projects/DrColborn/UgandaNets/data/results/pkbm.RDS")
+
+# create dataframe containing HPD and median for betas
+rt6 <- sapply(1:nrow(pkb$posterior$beta$sample), function(x) {
+  c(HPDinterval(create.mcmc.coda(pkb$posterior$beta$sample[x,],mcmc.input = pkb.mcmc.tune), prob = 0.95), median(create.mcmc.coda(pkb$posterior$beta$sample[x,],mcmc.input = pkb.mcmc.tune)))
+})
+
 # merge HPD of sigma^2 and phi
-rt6 <- cbind(rt6, c(HPDinterval(create.mcmc.coda(pkb_all[[1]][[4]]$posterior$sigmasq$sample ,mcmc.input = pkb.mcmc.tune)), median(create.mcmc.coda(pkb_all[[1]][[4]]$posterior$sigmasq$sample ,mcmc.input = pkb.mcmc.tune))))
-rt6 <- cbind(rt6, c(HPDinterval(create.mcmc.coda(pkb_all[[1]][[4]]$posterior$phi$sample ,mcmc.input = pkb.mcmc.tune)), median(create.mcmc.coda(pkb_all[[1]][[4]]$posteriore$phi$sample ,mcmc.input = pkb.mcmc.tune))))
+rt6 <- cbind(rt6, c(HPDinterval(create.mcmc.coda(pkb$posterior$sigmasq$sample ,mcmc.input = pkb.mcmc.tune)), median(create.mcmc.coda(pkb$posterior$sigmasq$sample ,mcmc.input = pkb.mcmc.tune))))
+rt6 <- cbind(rt6, c(HPDinterval(create.mcmc.coda(pkb$posterior$phi$sample ,mcmc.input = pkb.mcmc.tune)), median(create.mcmc.coda(pkb$posteriore$phi$sample ,mcmc.input = pkb.mcmc.tune))))
 # merge the means as row and exponentiate
-rt6 <- exp(rbind(rt6, c(pkb_all[[1]][[4]]$posterior$beta$mean, pkb_all[[1]][[4]]$posterior$sigmasq$mean, pkb_all[[1]][[4]]$posterior$phi$mean)))
+rt6 <- exp(rbind(rt6, c(pkb$posterior$beta$mean, pkb$posterior$sigmasq$mean, pkb$posterior$phi$mean)))
 rownames(rt6) <- c("95% LCI","95% UCI","Median","Mean")
-colnames(rt6) <- c("intercep","netCov","stime2","stime3",'stime4',"longitude","latitude", "sig^2","phi")
+colnames(rt6) <- c("intercep","netCov","stime2","stime3","stime4","longitude","latitude", "sig^2","phi")
 
 
 
@@ -296,6 +306,14 @@ Hmisc::label(tab2[["mic_npt"]]) <- ">= 1 net per 2"
 
 colnames(tab2) <- c("Net Cov",">= 1 net per 2","Net Cov",">= 1 net per 2")
 
+#print(xtable(tab2,
+             #align=paste(rep("r", ncol(tab2) + 1), collapse = "")
+             #))
+#ztable(tab2,
+       #zebra.type = 1,
+       #align=paste(rep("r", ncol(tab2) + 1), collapse = "")
+       #)  %>%
+#print(type = "latex")
 kable(tab2, align = c("c"),
       digits = 3,
       booktabs = TRUE) %>%
@@ -347,7 +365,7 @@ md_time <- temp %>%
   mutate(mi = ifelse(is.na(num_hh) == TRUE, 1, 0)) %>%
   select(village, stime, mi,micRate, rdtRate, netCov, Netptwo, oneNet, slept_net_p) %>%
   group_by(village, stime) %>%
-  summarize_all(funs(mean)) %>%
+  summarize_all(funs(mean(., na.rm=TRUE))) %>%
   filter(is.na(village) == FALSE)
 
 poly2 <- poly1
@@ -361,8 +379,7 @@ library(lattice)
 #map <- get_map(location = c(lon = 34.1, lat = 1.75), zoom = 12, maptype = "hybrid")
 map <- readRDS("/home/ck1/Documents/Projects/DrColborn/UgandaNets/data/process/map.RDS") # in the process folder
 # function to extract legend only
-g_legend <- function(a.gplot){ 
-    tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
+g_legend <- function(a.gplot){ tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
     leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
     legend <- tmp$grobs[[leg]] 
     return(legend)} 
@@ -376,6 +393,7 @@ f1df$vars <- factor(f1df$vars, levels = c('RDT','Microscopy'))
 ```
 
 ```{r googmap_overlay, fig.align='center', fig.width=6.5, fig.height=6.5, fig.cap="Maps of microscopy and rapid diagnostic test positivity using village shapes by survey time."}
+library(RColorBrewer)
 f.ref <- function(x) {
   stringr::str_extract(table_nums(x), "[^:]*")
 }
@@ -383,13 +401,25 @@ ggmap(map) +
     geom_polygon(aes(fill = rates, x = long, y = lat, group = group),
                  data = f1df[f1df$stime %in% c(1,2,3,4),] %>%
                      mutate(stime = ifelse(stime == 1, "Survey 1", ifelse(stime == 2, "Survey 2", ifelse(stime == 3, "Survey 3", "Survey 4")))),
-                 alpha = 0.8,
+                 alpha = 0.95,
                  color = "black",
                  size = 0.2) +
 theme(axis.text.x = element_text(size=7, angle=45, hjust = 1)) +
 facet_grid(vars ~ stime) +
-scale_fill_gradient2(low = "yellow", mid = "orange", high = "red", # colors
-                     midpoint = 0.5, name = paste0("rate"))
+#scale_fill_gradient2(low = "yellow", mid = "orange", high = "red", # colors
+                     #breaks = quantile(0:1),
+                     #limits = c(0,1),
+                     #midpoint = 0.5, name = paste0("rate")
+                     #)
+scale_fill_gradientn(
+                     colours=brewer.pal(10,"YlOrRd"),
+                     #colours=rev(brewer.pal(10,"Spectral")),
+                     breaks = quantile(0:1),
+                     limits = c(0,1),
+                     #midpoint = 0.5, 
+                     name = paste0("rate")
+                     )
+#ggsave("fig1.png")
 ```
 
 
@@ -408,17 +438,23 @@ f2df <- df %>%
     mutate(vars = ifelse(vars == "rdtRate", "RDT", "Microscopy"),
            Netptwo = ifelse(Netptwo == 1, ">50%", "<50%"))
 f2a <- ggplot(f2df, aes(x = netCov, y = rates, color = as.factor(stime))) + 
-  geom_smooth(method = 'gam', formula = y ~ s(x, bs="cs", k=spline_k)) + 
+  #geom_smooth(method = 'gam', formula = y ~ s(x, bs="cs", k=spline_k)) + 
+  geom_smooth(method = 'lm') + 
   facet_grid(. ~ vars)+
   theme_light() + 
   ggtitle("A") +
   labs(color = "Survey Time") + 
   scale_color_manual(values=c("#000000", "#f20505","#f9d70b", '#f4a460')) + 
-  theme(legend.position="bottom", axis.title.y = element_blank(), axis.title.x = element_blank()) +
+  theme(legend.position="bottom", axis.title.y = element_blank(), 
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.title.x = element_blank()
+        ) +
   coord_cartesian(ylim = c(0, 0.6), xlim=c(0,1))
 
 f2c <- ggplot(f2df, aes(x = as.factor(Netptwo), y = rates, fill = as.factor(stime))) + 
   geom_boxplot() +
+  #facet_grid(vars ~ .)+
   facet_grid(. ~ vars)+
   labs(fill = "Survey Time") +
   scale_fill_manual(values=c("#000000", "#f20505","#f9d70b", '#f4a460')) + 
@@ -427,13 +463,17 @@ f2c <- ggplot(f2df, aes(x = as.factor(Netptwo), y = rates, fill = as.factor(stim
   theme(legend.position="bottom", axis.title.y = element_blank(), axis.title.x = element_blank()) 
 
 f2b <- ggplot(f2df, aes(x = slept_net_p, y = rates, color = as.factor(stime))) + 
-  geom_smooth(method = 'gam', formula = y ~ s(x, bs="cs", k=spline_k)) + 
+  #geom_smooth(method = 'gam', formula = y ~ s(x, bs="cs", k=spline_k)) + 
+  geom_smooth(method = 'lm') + 
   facet_grid(. ~ vars)+
   theme_light() + 
   labs(color = "Survey Time") + 
   ggtitle("B") +
   scale_color_manual(values=c("#000000", "#f20505","#f9d70b", '#f4a460')) + 
-  theme(legend.position="bottom", axis.title.y = element_blank(), axis.title.x = element_blank()) +
+  theme(legend.position="bottom", axis.title.y = element_blank(), 
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.title.x = element_blank()) +
   coord_cartesian(ylim = c(0, 0.6), xlim=c(0,1))
 
 mylegend<-g_legend(f2a)
@@ -454,6 +494,8 @@ f2 <- grid.arrange(
           #labels = "AUTO",
           #align = 'v'
           #)
+#ggsave(file="./fig2.png", f2)
+table_nums <- captioner::captioner(prefix = "Table ")
 ```
 
 
