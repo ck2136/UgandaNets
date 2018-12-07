@@ -48,7 +48,7 @@ bibliography: bibliography.bib
 output: 
     pdf_document:
     #rticles::springer_article
-        latex_engine: xelatex
+        #latex_engine: xelatex
         template: template.tex
 header-includes:
    - \usepackage[margin=1in]{geometry}
