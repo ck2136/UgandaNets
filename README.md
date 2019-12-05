@@ -12,12 +12,11 @@ The data is in a HIPAA-compliant database that won't be accessible. There are 4 
 
 ## Code
 
-The code will be presented in the reports folder. The html file is created by
-using the `library("ProjectTemplate")` and `library("rmdformats")`.
+The code/ folder contains the data management (`data_manage.R` and `manage_modis.R`) code along with the analysis code (`analysis.R`). The manuscript is written in a `.Rmd` format (in `report/SpatialAnalysisMagoro.Rmd`).
 
-## Report
+## TODO
 
-The report contains code (data management, exploratory and statistical analysis, and report) in the respective directories. 
+The next steps regarding the analysis is included in the root folder as `TODO.md` file.
 
 ## Authors
 
@@ -31,7 +30,7 @@ The report contains code (data management, exploratory and statistical analysis,
 
 ## Date Modified
 
-9/11/2018
+12/15/2019
 
 ## Questions and Comments?
 
