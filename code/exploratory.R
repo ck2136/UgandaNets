@@ -3,7 +3,7 @@
 # Created by: CK
 # Created on: 10/19/2018
 # Modified by: CK
-# Modified on: 10/19/2018
+# Modified on 	06-12-2018
 ##############################################
 
 # - - - - - - - - - - - - - - - - - - - - - #
@@ -197,7 +197,8 @@ f2df <- df %>%
     mutate(vars = ifelse(vars == "rdtRate", "RDT", "Microscopy"),
            Netptwo = ifelse(Netptwo == 1, ">50%", "<50%"))
 f2a <- ggplot(f2df, aes(x = netCov, y = rates, color = as.factor(stime))) + 
-  geom_smooth(method = 'gam', formula = y ~ s(x, bs="cs", k=spline_k)) + 
+  geom_smooth(method = 'lm') + 
+  #geom_smooth(method = 'gam', formula = y ~ s(x, bs="cs", k=spline_k)) + 
   facet_grid(vars ~ .)+
   #facet_grid(. ~ vars)+
   theme_light() + 
@@ -222,7 +223,8 @@ f2c <- ggplot(f2df, aes(x = as.factor(Netptwo), y = rates, fill = as.factor(stim
   theme(legend.position="bottom", axis.title.y = element_blank(), axis.title.x = element_blank()) 
 
 f2b <- ggplot(f2df, aes(x = slept_net_p, y = rates, color = as.factor(stime))) + 
-  geom_smooth(method = 'gam', formula = y ~ s(x, bs="cs", k=spline_k)) + 
+  #geom_smooth(method = 'gam', formula = y ~ s(x, bs="cs", k=spline_k)) + 
+  geom_smooth(method = 'lm') + 
   facet_grid(vars ~ .)+
   #facet_grid(. ~ vars)+
   theme_light() + 
